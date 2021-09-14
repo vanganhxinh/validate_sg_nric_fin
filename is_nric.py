@@ -31,7 +31,16 @@ df = pd.DataFrame(data=data, columns = ['ID'])
 
 # vectorize the new column
 # assign the result checking into the new column
-# retrive the list of incorrect result
 is_nric_col = np.vectorize(is_nric)
 df = df.assign(IsCorrectNRIC=is_nric_col(df['ID']))
+
+# retrive the list of incorrect result only
 df[~df['IsCorrectNRIC']]
+
+# use the new column and update the value to differentiate nric or fin or not nric/fin
+df.assign(id_type = df['IsCorrectNRIC'])
+df.loc[df['IsCorrectNRIC'] & df['ID'].str.startswith('S'), 'id_type'] = 'NRIC'
+df.loc[df['IsCorrectNRIC'] & df['ID'].str.startswith('T'), 'id_type'] = 'NRIC'
+df.loc[df['IsCorrectNRIC'] & df['ID'].str.startswith('F'), 'id_type'] = 'FIN'
+df.loc[df['IsCorrectNRIC'] & df['ID'].str.startswith('G'), 'id_type'] = 'FIN'
+df.loc[~df['IsCorrectNRIC'], 'id_type'] = 'Not NRIC-FIN'
