@@ -18,3 +18,20 @@ def is_nric(nric):
 #    else:
 #        print("wrong pattern")
     return False
+
+###### use the function #####
+# test data 1 - direct call
+is_nric('S7509183X')
+
+# test data 2 - data is in a dataframe - single column ID
+data = [
+    ['ID', 'S1234567S']
+]
+df = pd.DataFrame(data=data, columns = ['ID'])
+
+# vectorize the new column
+# assign the result checking into the new column
+# retrive the list of incorrect result
+is_nric_col = np.vectorize(is_nric)
+df = df.assign(IsCorrectNRIC=is_nric_col(df['ID']))
+df[~df['IsCorrectNRIC']]
